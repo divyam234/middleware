@@ -45,9 +45,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth/core@npm:^0.18.6":
-  version: 0.18.6
-  resolution: "@auth/core@npm:0.18.6"
+"@auth/core@npm:^0.19.0":
+  version: 0.19.0
+  resolution: "@auth/core@npm:0.19.0"
   dependencies:
     "@panva/hkdf": "npm:^1.1.1"
     "@types/cookie": "npm:0.6.0"
@@ -61,7 +61,7 @@ __metadata:
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: c5c843ae010d991033f58bd16d4ec924691fee8c1596ab7b9ba652ca4172c8551f9f4023789fc46b9d23e559bd4d37b1a60c93f33c8374f90e544f84b6caf543
+  checksum: 27fc81a2e4348fb6a44ded8137001908c4dfbe0fd0375b1479f50d9ea5be73b5fad20f4338c0e3df1eac4200b3831a7a57cfb79fdcad5a2ce1ce04ff76ad9190
   languageName: node
   linkType: hard
 
@@ -1473,7 +1473,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hono/next-auth@workspace:packages/next-auth"
   dependencies:
-    "@auth/core": "npm:^0.18.6"
+    "@auth/core": "npm:^0.19.0"
     "@types/react": "npm:^18"
     hono: "npm:^3.11.7"
     jest: "npm:^29.7.0"
@@ -1482,7 +1482,7 @@ __metadata:
     typescript: "npm:^5.3.3"
     vitest: "npm:^1.0.4"
   peerDependencies:
-    "@auth/core": 0.18.*
+    "@auth/core": 0.*
     hono: 3.*
   languageName: unknown
   linkType: soft
@@ -16835,7 +16835,7 @@ __metadata:
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: ab156959b5538be35fcfc3682ff26a1124729859ba12edaab4d59696c14fe480ffe04144a084ee1d2d498e8e00b17c334fd548afb7656cf4138ded1630beb317
+  checksum: 5f6cad2e728a8a063521328e612d7876e12f0d8a8390d3b3aaa452a6a65e24e9ac8ea22beb72a924fd96ea0a49ea63bb4e251fb922b12eedfb7f7a26475e5c56
   languageName: node
   linkType: hard
 

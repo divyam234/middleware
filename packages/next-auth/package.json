@@ -45,8 +45,8 @@
   },
   "homepage": "https://github.com/honojs/middleware",
   "peerDependencies": {
-    "hono": "3.*",
-    "@auth/core": "0.*"
+    "@auth/core": "0.*",
+    "hono": "3.*"
   },
   "devDependencies": {
     "@auth/core": "^0.19.0",
