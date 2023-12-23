@@ -7,7 +7,7 @@ This middleware can be used to inject the Next Auth session into the request con
 ## Installation
 
 ```plain
-npm i hono @hono/next-auth
+npm i hono @hono/next-auth @auth/core
 ```
 
 ## Configuration
