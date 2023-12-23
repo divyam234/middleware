@@ -23,8 +23,8 @@ export type NextEnv = {
 
 export type NextAuthUser = {
   session: Session
-  token: JWT
-  user: AdapterUser
+  token?: JWT
+  user?: AdapterUser
 }
 
 export interface AuthConfig extends Omit<AuthConfigCore, 'raw'> {
@@ -84,9 +84,9 @@ export async function getAuthUser(c: Context): Promise<NextAuthUser | null> {
       async session(...args) {
         authUser = args[0]
         const session = (await config.callbacks?.session?.(...args)) ?? args[0].session
-
-        const user = args[0].user ?? args[0].token
-        return { user, ...session } as Session
+        // @ts-expect-error either user or token will be defined
+         const user = args[0].user ?? args[0].token
+        return { user, ...session } satisfies Session
       },
     },
   })) as Response
