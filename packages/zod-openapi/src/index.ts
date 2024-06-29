@@ -8,11 +8,11 @@ import type {
   ZodRequestBody,
 } from '@asteasolutions/zod-to-openapi'
 import {
+  OpenAPIRegistry,
   OpenApiGeneratorV3,
   OpenApiGeneratorV31,
-  OpenAPIRegistry,
+  extendZodWithOpenApi,
 } from '@asteasolutions/zod-to-openapi'
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import type { OpenAPIObjectConfig } from '@asteasolutions/zod-to-openapi/dist/v3.0/openapi-generator'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
@@ -27,6 +27,7 @@ import type {
   TypedResponse,
 } from 'hono'
 import type { MergePath, MergeSchemaPath } from 'hono/types'
+import type { JSONParsed, RemoveBlankRecord } from 'hono/utils/types'
 import type {
   ClientErrorStatusCode,
   InfoStatusCode,
@@ -35,10 +36,9 @@ import type {
   StatusCode,
   SuccessStatusCode,
 } from 'hono/utils/http-status'
-import type { Prettify, RemoveBlankRecord } from 'hono/utils/types'
 import { mergePath } from 'hono/utils/url'
-import type { AnyZodObject, ZodSchema, ZodError } from 'zod'
-import { z, ZodType } from 'zod'
+import type { AnyZodObject, ZodError, ZodSchema } from 'zod'
+import { ZodType, z } from 'zod'
 
 type MaybePromise<T> = Promise<T> | T
 
@@ -48,10 +48,10 @@ export type RouteConfig = RouteConfigBase & {
 
 type RequestTypes = {
   body?: ZodRequestBody
-  params?: AnyZodObject
-  query?: AnyZodObject
-  cookies?: AnyZodObject
-  headers?: AnyZodObject | ZodType<unknown>[]
+  params?: ZodType
+  query?: ZodType
+  cookies?: ZodType
+  headers?: ZodType | ZodType[]
 }
 
 type IsJson<T> = T extends string
@@ -77,7 +77,7 @@ type InputTypeBase<
   Part extends string,
   Type extends string
 > = R['request'] extends RequestTypes
-  ? RequestPart<R, Part> extends AnyZodObject
+  ? RequestPart<R, Part> extends ZodType
     ? {
         in: { [K in Type]: z.input<RequestPart<R, Part>> }
         out: { [K in Type]: z.output<RequestPart<R, Part>> }
@@ -167,7 +167,7 @@ export type RouteConfigToTypedResponse<R extends RouteConfig> = {
   > extends never
     ? TypedResponse<{}, ExtractStatusCode<Status>, string>
     : TypedResponse<
-        ExtractContent<R['responses'][Status]['content']>,
+        JSONParsed<ExtractContent<R['responses'][Status]['content']>>,
         ExtractStatusCode<Status>,
         'json'
       >
@@ -299,7 +299,7 @@ export class OpenAPIHono<
       InputTypeJson<R>,
     P extends string = ConvertPathType<R['path']>
   >(
-    route: R,
+    { middleware: routeMiddleware, ...route }: R,
     handler: Handler<
       E,
       P,
@@ -379,10 +379,10 @@ export class OpenAPIHono<
       }
     }
 
-    const middleware = route.middleware
-      ? Array.isArray(route.middleware)
-        ? route.middleware
-        : [route.middleware]
+    const middleware = routeMiddleware
+      ? Array.isArray(routeMiddleware)
+        ? routeMiddleware
+        : [routeMiddleware]
       : []
 
     this.on(

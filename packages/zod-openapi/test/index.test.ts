@@ -1,10 +1,13 @@
 import type { RouteConfig } from '@asteasolutions/zod-to-openapi'
 import type { Context, TypedResponse } from 'hono'
+import { bearerAuth } from 'hono/bearer-auth'
 import { hc } from 'hono/client'
-import { describe, it, expect, expectTypeOf } from 'vitest'
-import { OpenAPIHono, createRoute, z, RouteConfigToTypedResponse } from '../src/index'
-import { Expect, Equal } from 'hono/utils/types'
-import { ServerErrorStatusCode } from 'hono/utils/http-status'
+import { describe, expect, expectTypeOf, it } from 'vitest'
+import type { RouteConfigToTypedResponse } from '../src/index'
+import { OpenAPIHono, createRoute, z } from '../src/index'
+import type { Equal, Expect } from 'hono/utils/types'
+import type { ServerErrorStatusCode } from 'hono/utils/http-status'
+import { stringify } from 'yaml'
 
 describe('Constructor', () => {
   it('Should not require init object', () => {
@@ -1511,5 +1514,47 @@ describe('RouteConfigToTypedResponse', () => {
           'json'
         >
     type verify = Expect<Equal<Expected, Actual>>
+  })
+})
+
+describe('Generate YAML', () => {
+  it('Should generate YAML with Middleware', async () => {
+    const app = new OpenAPIHono()
+    app.openapi(
+      createRoute({
+        method: 'get',
+        path: '/books',
+        middleware: [
+          bearerAuth({
+            verifyToken: (_, __) => {
+              return true
+            },
+          }),
+        ],
+        responses: {
+          200: {
+            description: 'Books',
+            content: {
+              'application/json': {
+                schema: z.array(
+                  z.object({
+                    title: z.string(),
+                  })
+                ),
+              },
+            },
+          },
+        },
+      }),
+      (c) => c.json([{ title: 'foo' }])
+    )
+    const doc = app.getOpenAPI31Document({
+      openapi: '3.1.0',
+      info: {
+        title: 'My API',
+        version: '1.0.0',
+      },
+    })
+    expect(() => stringify(doc)).to.not.throw()
   })
 })
